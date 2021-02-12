@@ -24,3 +24,7 @@ export const cities = {
 }
 
 export const genders = ['Male', 'Female', 'Unspecified']
+
+export const chartFilters = ['sales_number', 'revenue']; 
+
+export const sortKeys = ['date', 'product', 'sales_number', 'revenue'];

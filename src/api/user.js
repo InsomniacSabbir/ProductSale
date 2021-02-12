@@ -9,15 +9,18 @@ export default [
     id: 2,
     email: "shabnam@mushrit.com",
     password: "123456",
+    authToken: "testAuthToken",
   },
   {
     id: 3,
     email: "sakib@alam.com",
     password: "123456",
+    authToken: "testAuthToken",
   },
   {
     id: 4,
     email: "akter@saima.com",
     password: "123456",
+    authToken: "testAuthToken",
   },
 ];

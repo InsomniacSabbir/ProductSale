@@ -8,19 +8,20 @@ const Chart = (props) => {
 		return null
 	}
 
-	data.shift()
-
-	const labels = data.map((row) => row[0])
+	const labels = data.map((row) => row['product']);
 
 	const state = {
 		labels: labels,
 		datasets: [
 			{
-				label: 'Price',
+				label: props.yAxisLabel,
 				backgroundColor: '#0000FF',
 				borderColor: 'rgba(0,0,0,1)',
 				borderWidth: 2,
-				data: data.map((row) => row[1]),
+				data: data.map((row) =>  {
+					console.log(row)
+					return row[props.yAxisLabel];
+				}),
 			},
 		],
 	}
@@ -32,7 +33,7 @@ const Chart = (props) => {
 				options={{
 					title: {
 						display: true,
-						text: 'Price Per Product',
+						text: `${props.yAxisLabel} per product`,
 						fontSize: 20,
 					},
 					legend: {

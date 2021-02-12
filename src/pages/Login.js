@@ -17,7 +17,6 @@ const LoginPage = ({ onLoginSuccess }) => {
   const onSubmitForm = () => {
     const authToken = getAuthToken(email, password);
     if (authToken) {
-      localStorage.setItem('authToken', authToken);
       onLoginSuccess(authToken);
     }
   };
