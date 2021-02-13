@@ -2,11 +2,12 @@ import { isBefore } from "date-fns";
 
 /**
  * Preprocessing the csv data to add key attribute for each item in each row of the sales data.
- * @param {[]} productData
+ * @param {array} salesData
  */
 export const preProcessData = (salesData) => {
   const processedData = [];
   salesData.forEach((row, index) => {
+    // Checking if the current row is empty or not. If the row is empty we are ignoring that row.
     if (row[0]) {
       processedData.push({
         id: index,
@@ -23,18 +24,16 @@ export const preProcessData = (salesData) => {
 
 /**
  * Sort sales data by user defined sort key.
- * @param {[]} saleData
+ * @param {array} saleData
  * @param {string} sortByKey
  */
 export const sortSaleData = (saleData, sortByKey) => {
   const sortedData = saleData.sort((saleDataA, saleDataB) => {
     if (sortByKey === "product") {
-      // Sort by product name lexicographically
       if (saleDataA[sortByKey] > saleDataB[sortByKey]) return 1;
       else if (saleDataA[sortByKey] < saleDataB[sortByKey]) return -1;
       return 0;
     } else if (sortByKey === "date") {
-      // Sort by date ascending order
       const dateA = new Date(saleDataA[sortByKey]);
       const dateB = new Date(saleDataB[sortByKey]);
 
@@ -50,20 +49,20 @@ export const sortSaleData = (saleData, sortByKey) => {
 
 /**
  * Find the most revenue earning product.
- * @param {[]} saleData
+ * @param {array} saleData
  */
 export const getMostRevenueEarningProduct = (saleData) => {
   let maximumRevenueEarningProduct = {
     name: "",
     revenue: 0,
   };
+
   let revenuePerProduct = {};
   saleData.forEach((item) => {
     if (!revenuePerProduct.hasOwnProperty(item.product)) {
       revenuePerProduct[item.product] = 0;
     }
-    revenuePerProduct[item.product] +=
-      Number(item.revenue) * Number(item.sales_number);
+    revenuePerProduct[item.product] += Number(item.revenue);
     if (
       revenuePerProduct[item.product] > maximumRevenueEarningProduct.revenue
     ) {
@@ -75,6 +74,10 @@ export const getMostRevenueEarningProduct = (saleData) => {
   return maximumRevenueEarningProduct;
 };
 
+/**
+ * Find the most sold product from the given saleData
+ * @param {array} saleData 
+ */
 export const getMostSoldProduct = (saleData) => {
   let mostSoldProduct = {
     name: "",
@@ -95,6 +98,10 @@ export const getMostSoldProduct = (saleData) => {
   return mostSoldProduct;
 };
 
+/**
+ * Calculate the average revenue for the given saleData
+ * @param {array} saleData 
+ */
 export const getAverageSale = (saleData) => {
   const totalRevenue = saleData.reduce(
     (revenue, curr) => (revenue += Number(curr.revenue)),
@@ -103,6 +110,10 @@ export const getAverageSale = (saleData) => {
   return totalRevenue / saleData.length;
 };
 
+/**
+ * Find the most expensive product from the saleData.
+ * @param {array} saleData 
+ */
 export const getMostExpensiveProduct = (saleData) => {
   return saleData.reduce((prev, curr, index) => {
     const prevItemPricePerUnit =
@@ -114,33 +125,4 @@ export const getMostExpensiveProduct = (saleData) => {
     }
     return prev;
   }, {});
-};
-
-export const getAggregatedData = () => {
-    const currentUserId = localStorage.getItem('currentUserId');
-  const salesData = getSalesData();
-  const currentUserSalesData = salesData.filter(
-    (item) => item.userId === currentUserId
-  );
-  return {
-    avgSaleCurrentUser: getAverageSale(currentUserSalesData),
-    avgSale: getAverageSale(salesData),
-    mostExpensiveProduct: getMostExpensiveProduct(currentUserSalesData),
-    mostRevenueEarningProduct: getMostRevenueEarningProduct(
-      currentUserSalesData
-    ),
-    mostSoldProduct: getMostSoldProduct(currentUserSalesData),
-  };
-};
-
-export const saveSalesData = (salesData) => {
-  localStorage.setItem("salesData", JSON.stringify(salesData));
-};
-
-export const getSalesData = () => {
-  const salesDataStr = localStorage.getItem("salesData");
-  if (salesDataStr) {
-    return JSON.parse(salesDataStr);
-  }
-  return [];
 };

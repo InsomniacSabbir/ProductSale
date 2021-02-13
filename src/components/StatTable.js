@@ -16,8 +16,6 @@ const StatTable = (props) => {
     return null;
   }
 
-  console.log(data);
-
   const columns = [
     { field: "avgSaleCurrentUser", headerName: "" },
     { field: "avgSale", headerName: "" },

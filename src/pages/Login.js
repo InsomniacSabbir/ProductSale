@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import { Button, Container, Grid, TextField } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import { getAuthToken } from '../utils/mockApiHelper';
+import { getAuthToken } from "../utils/mockApiHelper";
+import { ToastContainer, toast } from "react-toastify";
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -13,12 +14,23 @@ const LoginPage = ({ onLoginSuccess }) => {
   const classes = useStyles();
   const [email, setEmail] = useState();
   const [password, setPassword] = useState();
+  const [hasError, setHasError] = useState(false);
 
-  const onSubmitForm = () => {
-    const authToken = getAuthToken(email, password);
-    if (authToken) {
-      onLoginSuccess(authToken);
+  const onSubmitForm = (e) => {
+    e.preventDefault();
+    if (!email || !password) {
+      setHasError(true);
+      return;
     }
+    
+    // Mock API call for authentication.
+    const authToken = getAuthToken(email, password);
+    if (!authToken) {
+      toast.error("Email and/or password doesn't match");
+      return ;
+    }
+
+    onLoginSuccess(authToken);
   };
   return (
     <Container className={classes.container} maxWidth="xs">
@@ -28,6 +40,8 @@ const LoginPage = ({ onLoginSuccess }) => {
             <Grid container spacing={2}>
               <Grid item xs={12}>
                 <TextField
+                  error={hasError && !email}
+                  helperText={hasError && !email ? 'Email can not be empty' : null}
                   fullWidth
                   label="Email"
                   name="email"
@@ -39,6 +53,8 @@ const LoginPage = ({ onLoginSuccess }) => {
               </Grid>
               <Grid item xs={12}>
                 <TextField
+                  error={hasError && !password}
+                  helperText={hasError && !password ? 'Password can not be empty' : null}
                   fullWidth
                   label="Password"
                   name="password"
@@ -64,6 +80,7 @@ const LoginPage = ({ onLoginSuccess }) => {
           </Grid>
         </Grid>
       </form>
+      <ToastContainer />
     </Container>
   );
 };

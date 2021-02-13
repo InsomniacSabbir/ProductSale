@@ -13,18 +13,16 @@ import { logout } from "../utils/mockApiHelper";
 import {
   preProcessData,
   sortSaleData,
-  getAggregatedData,
-  saveSalesData,
-  getSalesData,
 } from "../utils/helpers";
 import { countries, cities, genders, sortKeys } from "../data";
 import Papa from "papaparse";
 import {
   getCurrentUserInformation,
   saveUserInformation,
+  saveSalesData,
+
 } from "../utils/mockApiHelper";
 import Dialog from "./Dialog";
-import OutputPage from "./OutputPage";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -97,6 +95,7 @@ const InputPage = ({ onLogout, setShowoutput, setcsvData }) => {
       city,
     };
     setHasError(false);
+    // Mock API call for updating the submitted user information
     saveUserInformation(userInformationObject);
     toast.success("Successfully updated user information");
   };
@@ -158,7 +157,7 @@ const InputPage = ({ onLogout, setShowoutput, setcsvData }) => {
   const onShowOutPut = (data) => {
     data.data.shift();
     const rows = sortSaleData(preProcessData(data.data), sortKeys[0]);
-    saveSalesData(rows); // saving sales data in local storage
+    saveSalesData(rows); // saving sales data in local storage using mock API call.
     setShowoutput(true);
   };
 
@@ -180,11 +179,11 @@ const InputPage = ({ onLogout, setShowoutput, setcsvData }) => {
         </Grid>
       </Grid>
       <Typography variant="h6">User</Typography>
-      <Grid container spacing={3}>
+      <Grid container spacing={3} alignItems={'center'}>
         <Grid item xs={6}>
           <TextField
             error={hasError && !name}
-            helperText={!name && hasError ? "Name can not be empty" : ""}
+            helperText={!name && hasError ? "Name can not be empty" : null}
             id="name"
             label="Name"
             variant="outlined"

@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { getSalesData, saveSalesData } from "../utils/helpers";
-import { getCurrentUserInformation, saveUserInformation } from "../utils/mockApiHelper";
+import { getCurrentUserInformation, saveUserInformation, saveSalesData, getSalesData } from "../utils/mockApiHelper";
 import InputPage from "./InputPage";
 import OutputPage from "./OutputPage";
 
