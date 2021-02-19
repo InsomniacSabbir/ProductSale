@@ -47,8 +47,6 @@ const Main = ({ onLogout }) => {
         <OutputPage
           handleReset={handleReset}
           onLogout={onLogout}
-          userInformation={getCurrentUserInformation()}
-          rowData={[...csvData]}
         />
       )}
     </>

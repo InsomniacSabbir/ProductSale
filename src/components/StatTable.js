@@ -12,7 +12,7 @@ import {
 const StatTable = (props) => {
   const data = props.data;
 
-  if (!data || data === undefined) {
+  if (!data || data === undefined || Object.keys(data).length === 0) {
     return null;
   }
 
@@ -33,11 +33,11 @@ const StatTable = (props) => {
         <Table style={{ minWidth: 700 }} aria-label="spanning table">
           <TableHead>
             <TableRow>
-              <TableCell align="center">Average Sales()</TableCell>
-              <TableCell align="center">Avg Sales(All)</TableCell>
-              <TableCell align="center">Most Expensive Product</TableCell>
-              <TableCell align="center">Most Revenue Earning product</TableCell>
-              <TableCell align="center">Most Sold product</TableCell>
+              <TableCell align="center">Average Sales for Employee</TableCell>
+              <TableCell align="center">Average Sales for All Employees</TableCell>
+              <TableCell align="center">Highest Revenue Sale</TableCell>
+              <TableCell align="center">Highest Revenue Product</TableCell>
+              <TableCell align="center">Highest Selling Product</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -77,7 +77,7 @@ const StatTable = (props) => {
                     </TableRow>
                     <TableRow>
                       <TableCell>{data.mostExpensiveProduct.product}</TableCell>
-                      <TableCell>{Number(data.mostExpensiveProduct.revenue) / Number(data.mostExpensiveProduct.sales_number)}</TableCell>
+                      <TableCell>{Number(data.mostExpensiveProduct.revenue)}</TableCell>
                     </TableRow>
                   </TableHead>
                 </Table>

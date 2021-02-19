@@ -3,7 +3,6 @@ import { DataGrid } from '@material-ui/data-grid'
 
 export default function Output(props) {
 	const data = props.data
-
 	if (!data || data === undefined) {
 		return null
 	}

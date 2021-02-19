@@ -11,7 +11,7 @@ import {
  * @param {string} email
  * @param {string} password
  */
-export const getAuthToken = (email, password) => {
+export const getAuthToken = (email, password, users) => {
   const currentUser = userData.find(
     (item) => item.email === email && item.password === password
   );
@@ -30,6 +30,7 @@ export const logout = () => {
   localStorage.removeItem("authToken");
   localStorage.removeItem("currentUserId");
   localStorage.removeItem("currentUserInformation");
+  localStorage.removeItem('salesData');
 };
 
 /**
@@ -91,3 +92,13 @@ export const getAggregatedData = () => {
     mostSoldProduct: getMostSoldProduct(currentUserSalesData),
   };
 };
+
+export const generateToken = (max) => {
+  var s = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+  var n = s.length-1;
+  var token = '';
+  for (var i = 0; i < max; i++) {
+      token += s.charAt(Math.floor(Math.random() * n));
+  }
+  return token;
+}

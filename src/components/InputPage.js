@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import TextField from "@material-ui/core/TextField";
 import InputLabel from "@material-ui/core/InputLabel";
 import MenuItem from "@material-ui/core/MenuItem";
@@ -13,6 +13,8 @@ import { logout } from "../utils/mockApiHelper";
 import {
   preProcessData,
   sortSaleData,
+  isValidEmail,
+  isValidName,
 } from "../utils/helpers";
 import { countries, cities, genders, sortKeys } from "../data";
 import Papa from "papaparse";
@@ -20,25 +22,28 @@ import {
   getCurrentUserInformation,
   saveUserInformation,
   saveSalesData,
-
 } from "../utils/mockApiHelper";
 import Dialog from "./Dialog";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { isValid } from "date-fns";
 
 const InputPage = ({ onLogout, setShowoutput, setcsvData }) => {
   const classes = useStyles();
-  const [name, setName] = React.useState();
-  const [email, setEmail] = React.useState("");
-  const [age, setAge] = React.useState("");
-  const [gender, setGender] = React.useState("");
-  const [city, setCity] = React.useState("");
-  const [country, setCountry] = React.useState("");
-  const [file, setFile] = React.useState();
-  const [rawData, setRawData] = React.useState();
-  const [cityList, setCityList] = React.useState([]);
-  const [openDialog, setOpenDialog] = React.useState(false);
-  const [hasError, setHasError] = React.useState(false);
+  const [name, setName] = useState();
+  const [email, setEmail] = useState("");
+  const [age, setAge] = useState("");
+  const [gender, setGender] = useState("");
+  const [city, setCity] = useState("");
+  const [country, setCountry] = useState("");
+  const [file, setFile] = useState();
+  const [rawData, setRawData] = useState();
+  const [cityList, setCityList] = useState([]);
+  const [openDialog, setOpenDialog] = useState(false);
+  const [hasError, setHasError] = useState(false);
+  const [hasUpdatedUserInformation, setHasUpdatedUserInformation] = useState(
+    false
+  );
 
   useEffect(() => {
     const userInformation = getCurrentUserInformation();
@@ -60,6 +65,7 @@ const InputPage = ({ onLogout, setShowoutput, setcsvData }) => {
     !!gender &&
     !!city &&
     !!country &&
+    hasUpdatedUserInformation &&
     (!!file || !!rawData);
 
   const handleReset = () => {
@@ -76,6 +82,7 @@ const InputPage = ({ onLogout, setShowoutput, setcsvData }) => {
     setHasError(false);
     saveUserInformation({});
     saveSalesData([]);
+    setHasUpdatedUserInformation(false);
   };
 
   const onUpdateUserInformation = () => {
@@ -93,11 +100,21 @@ const InputPage = ({ onLogout, setShowoutput, setcsvData }) => {
       age,
       country,
       city,
+      userId: localStorage.getItem("currentUserId"),
     };
-    setHasError(false);
-    // Mock API call for updating the submitted user information
-    saveUserInformation(userInformationObject);
-    toast.success("Successfully updated user information");
+
+    fetch("/api/userinformation", {
+      method: "post",
+      body: JSON.stringify(userInformationObject),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        setHasError(false);
+        saveUserInformation(userInformationObject);
+        setHasUpdatedUserInformation(true);
+        toast.success("Successfully updated user information");
+      })
+      .catch((err) => console.log(err));
   };
 
   /**
@@ -157,8 +174,17 @@ const InputPage = ({ onLogout, setShowoutput, setcsvData }) => {
   const onShowOutPut = (data) => {
     data.data.shift();
     const rows = sortSaleData(preProcessData(data.data), sortKeys[0]);
-    saveSalesData(rows); // saving sales data in local storage using mock API call.
-    setShowoutput(true);
+    fetch("/api/sales", {
+      method: "post",
+      body: JSON.stringify(rows),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        saveSalesData(data.sales); // saving sales data in local storage using mock API call.
+        setShowoutput(true);
+        // toast.success("Successfully updated user information");
+      })
+      .catch((err) => console.log(err));
   };
 
   return (
@@ -179,11 +205,17 @@ const InputPage = ({ onLogout, setShowoutput, setcsvData }) => {
         </Grid>
       </Grid>
       <Typography variant="h6">User</Typography>
-      <Grid container spacing={3} alignItems={'center'}>
+      <Grid container spacing={3} alignItems={"center"}>
         <Grid item xs={6}>
           <TextField
-            error={hasError && !name}
-            helperText={!name && hasError ? "Name can not be empty" : null}
+            error={(hasError && !name) || (name && !isValidName(name))}
+            helperText={
+              !name && hasError
+                ? "Name can not be empty"
+                : name && !isValidName(name)
+                ? "Name should have first name and last name"
+                : ""
+            }
             id="name"
             label="Name"
             variant="outlined"
@@ -246,8 +278,14 @@ const InputPage = ({ onLogout, setShowoutput, setcsvData }) => {
         </Grid>
         <Grid item xs={6}>
           <TextField
-            error={hasError && !email}
-            helperText={!email && hasError ? "Email can not be empty" : ""}
+            error={(hasError && !email) || (email && !isValidEmail(email))}
+            helperText={
+              !email && hasError
+                ? "Email can not be empty"
+                : email && !isValidEmail(email)
+                ? "Please insert a valid email address."
+                : ""
+            }
             id="email"
             label="Email"
             variant="outlined"

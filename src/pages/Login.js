@@ -1,8 +1,9 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Button, Container, Grid, TextField } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import { getAuthToken } from "../utils/mockApiHelper";
+import { isValidEmail } from "../utils/helpers";
 import { ToastContainer, toast } from "react-toastify";
+import { isValid } from "date-fns";
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -22,15 +23,26 @@ const LoginPage = ({ onLoginSuccess }) => {
       setHasError(true);
       return;
     }
-    
-    // Mock API call for authentication.
-    const authToken = getAuthToken(email, password);
-    if (!authToken) {
-      toast.error("Email and/or password doesn't match");
-      return ;
-    }
 
-    onLoginSuccess(authToken);
+    // Mock API call for authentication.
+    fetch("/api/token", {
+      method: "post",
+      body: JSON.stringify({ email, password }),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        console.log(data);
+        const authToken = data.access_token;
+        const userId = data.user_id;
+        if (!authToken) {
+          toast.error("Email and/or password doesn't match");
+          return;
+        }
+        onLoginSuccess(authToken);
+        localStorage.setItem("authToken", authToken);
+        localStorage.setItem("currentUserId", userId);
+      })
+      .catch((err) => console.log(err));
   };
   return (
     <Container className={classes.container} maxWidth="xs">
@@ -40,8 +52,14 @@ const LoginPage = ({ onLoginSuccess }) => {
             <Grid container spacing={2}>
               <Grid item xs={12}>
                 <TextField
-                  error={hasError && !email}
-                  helperText={hasError && !email ? 'Email can not be empty' : null}
+                  error={(hasError && !email) || (email && !isValidEmail(email))}
+                  helperText={
+                    hasError && !email
+                      ? "Email can not be empty"
+                      : email && !isValidEmail(email)
+                      ? "Please insert valid email address"
+                      : ""
+                  }
                   fullWidth
                   label="Email"
                   name="email"
@@ -54,7 +72,9 @@ const LoginPage = ({ onLoginSuccess }) => {
               <Grid item xs={12}>
                 <TextField
                   error={hasError && !password}
-                  helperText={hasError && !password ? 'Password can not be empty' : null}
+                  helperText={
+                    hasError && !password ? "Password can not be empty" : null
+                  }
                   fullWidth
                   label="Password"
                   name="password"

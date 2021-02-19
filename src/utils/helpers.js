@@ -76,7 +76,7 @@ export const getMostRevenueEarningProduct = (saleData) => {
 
 /**
  * Find the most sold product from the given saleData
- * @param {array} saleData 
+ * @param {array} saleData
  */
 export const getMostSoldProduct = (saleData) => {
   let mostSoldProduct = {
@@ -100,7 +100,7 @@ export const getMostSoldProduct = (saleData) => {
 
 /**
  * Calculate the average revenue for the given saleData
- * @param {array} saleData 
+ * @param {array} saleData
  */
 export const getAverageSale = (saleData) => {
   const totalRevenue = saleData.reduce(
@@ -112,17 +112,34 @@ export const getAverageSale = (saleData) => {
 
 /**
  * Find the most expensive product from the saleData.
- * @param {array} saleData 
+ * @param {array} saleData
  */
 export const getMostExpensiveProduct = (saleData) => {
   return saleData.reduce((prev, curr, index) => {
-    const prevItemPricePerUnit =
-      Number(prev.revenue) / Number(prev.sales_number);
-    const currItemPricePerUnit =
-      Number(curr.revenue) / Number(curr.sales_number);
-    if (index === 0 || prevItemPricePerUnit < currItemPricePerUnit) {
+    const prevRev = Number(prev.revenue);
+    const currRev = Number(curr.revenue);
+    if (index === 0 || prevRev < currRev) {
       prev = curr;
     }
     return prev;
   }, {});
+};
+
+/**
+ * Checks if given name has atleast first name and last name part.
+ * @param {string} name 
+ */
+export const isValidName = (name) => {
+  if (!name) return false;
+  const splittedName = name.split(" ");
+  return splittedName.length >= 2 && splittedName.filter(item => item !== '').length === splittedName.length;
+};
+
+/**
+ * Check if given email address is valid.
+ * @param {string} email 
+ */
+export const isValidEmail = (email) => {
+  const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+  return re.test(String(email).toLowerCase());
 };
